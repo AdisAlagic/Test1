@@ -12,11 +12,13 @@ using namespace std;
 
 int total_threads = 0;
 mutex m;
+
 class reader {
     string name, *data;
 
     void read() {
         lock_guard<mutex> l(m);
+        this_thread::sleep_for(1s);
         printf("Reader %s reads data: %s\n", name.c_str(), data->c_str());
         total_threads++;
 
@@ -38,6 +40,8 @@ class writer {
     void write() {
         lock_guard<mutex> l(m);
         *data = "writer " + name;
+        //Эмитируем долгий процесс?
+        this_thread::sleep_for(2s);
         printf("Writer %s changed string with data: %s\n", name.c_str(), data->c_str());
         total_threads++;
     }
@@ -60,11 +64,13 @@ int main() {
             char *writeName = new char[100];
             sprintf(writeName, "n %d", j);
             writer write(writeName, &data);
+            delete[] writeName;
         }
         if (j < NUMBER_OF_READERS) {
             char *readName = new char[100];
             sprintf(readName, "n %d", j);
             reader read(readName, &data);
+            delete[] readName;
         }
     }
 
