@@ -17,6 +17,9 @@ class reader {
     string name, *data;
 
     void read() {
+        if (data == nullptr){
+            return;
+        }
         lock_guard<mutex> l(m);
         this_thread::sleep_for(1s);
         printf("Reader %s reads data: %s\n", name.c_str(), data->c_str());
@@ -39,6 +42,9 @@ class writer {
 
     void write() {
         lock_guard<mutex> l(m);
+        if (data == nullptr){
+            return;
+        }
         *data = "writer " + name;
         //Эмитируем долгий процесс?
         this_thread::sleep_for(2s);
